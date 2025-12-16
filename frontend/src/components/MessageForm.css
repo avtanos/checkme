@@ -1,0 +1,159 @@
+.message-form-container {
+  padding: 2rem;
+}
+
+.message-form-container h2 {
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.message-form-provider {
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+
+.message-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.form-error {
+  padding: 0.75rem;
+  background: #ffebee;
+  color: #c62828;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+/* Планшеты */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .message-form-container {
+    padding: 1.5rem;
+  }
+}
+
+/* Мобильные устройства */
+@media (max-width: 768px) {
+  .message-form-container {
+    padding: 1rem;
+  }
+  
+  .message-form-container h2 {
+    font-size: 1.25rem;
+  }
+  
+  .message-form-provider {
+    font-size: 0.85rem;
+  }
+  
+  .form-group label {
+    font-size: 0.95rem;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    font-size: 0.95rem;
+    padding: 0.7rem;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+}
+
+/* Маленькие мобильные */
+@media (max-width: 480px) {
+  .message-form-container {
+    padding: 0.875rem;
+  }
+  
+  .message-form-container h2 {
+    font-size: 1.1rem;
+  }
+  
+  .message-form-provider {
+    font-size: 0.8rem;
+    margin-bottom: 1.25rem;
+  }
+  
+  .message-form {
+    gap: 0.875rem;
+  }
+  
+  .form-group label {
+    font-size: 0.9rem;
+    margin-bottom: 0.4rem;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    font-size: 0.9rem;
+    padding: 0.625rem;
+  }
+  
+  .form-group textarea {
+    min-height: 80px;
+  }
+  
+  .form-error {
+    font-size: 0.85rem;
+    padding: 0.625rem;
+  }
+  
+  .form-actions {
+    margin-top: 0.875rem;
+  }
+  
+  .form-actions .btn {
+    font-size: 0.9rem;
+    padding: 0.625rem 1rem;
+  }
+}
+

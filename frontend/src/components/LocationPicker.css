@@ -1,0 +1,40 @@
+.location-picker {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.location-picker-map {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  margin-bottom: 0.5rem;
+}
+
+.location-picker-info {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.location-picker-info p {
+  margin: 0.5rem 0;
+}
+
+.location-coords {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+@media (max-width: 768px) {
+  .location-picker-map {
+    height: 250px !important;
+  }
+  
+  .location-coords {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
