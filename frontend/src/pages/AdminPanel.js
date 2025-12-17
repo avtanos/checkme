@@ -13,6 +13,7 @@ import {
   getAdminStats,
   getCurrentUser,
 } from '../api/client';
+import Footer from '../components/Footer';
 import './AdminPanel.css';
 
 function AdminPanel() {
@@ -215,6 +216,7 @@ function AdminPanel() {
           </>
         )}
       </div>
+      <Footer />
     </div>
   );
 }

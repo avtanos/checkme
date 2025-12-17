@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../api/client';
+import Footer from '../components/Footer';
 import './LoginPage.css';
 
 function LoginPage() {
@@ -89,6 +90,7 @@ function LoginPage() {
           <Link to="/" className="back-link">← Назад к карте</Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

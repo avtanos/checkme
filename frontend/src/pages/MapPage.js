@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TopBar from '../components/TopBar';
+import Footer from '../components/Footer';
 import Map from '../components/Map';
 import ProviderList from '../components/ProviderList';
 import ProviderModal from '../components/ProviderModal';
@@ -167,6 +168,8 @@ function MapPage() {
           onClose={handleCloseModal}
         />
       )}
+
+      <Footer />
     </div>
   );
 }

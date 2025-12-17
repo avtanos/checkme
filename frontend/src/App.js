@@ -5,6 +5,8 @@ import ProviderCabinet from './pages/ProviderCabinet';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import AdminPanel from './pages/AdminPanel';
+import OfferPage from './pages/OfferPage';
+import PrivacyPage from './pages/PrivacyPage';
 import './App.css';
 
 function App() {
@@ -17,6 +19,8 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/cabinet" element={<ProviderCabinet />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/offer" element={<OfferPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
         </Routes>
       </div>
     </Router>

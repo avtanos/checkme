@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register, getCategories, uploadFile } from '../api/client';
 import LocationPicker from '../components/LocationPicker';
+import Footer from '../components/Footer';
 import './RegisterPage.css';
 
 function RegisterPage() {
@@ -255,6 +256,7 @@ function RegisterPage() {
           <Link to="/" className="back-link">← Назад к карте</Link>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

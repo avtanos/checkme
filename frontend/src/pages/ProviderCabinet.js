@@ -4,6 +4,7 @@ import { getMyProvider, updateProvider, getProviderMessages } from '../api/clien
 import LocationPicker from '../components/LocationPicker';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import ApiUnavailable from '../components/ApiUnavailable';
+import Footer from '../components/Footer';
 import './ProviderCabinet.css';
 
 const categoryOptions = [
@@ -344,6 +345,7 @@ function ProviderCabinet() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
