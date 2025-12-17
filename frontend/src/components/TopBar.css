@@ -137,3 +137,17 @@
 .burger::after {
   bottom: 0;
 }
+
+/* Скрыть бургер-меню на десктопе, показывать только на мобильных */
+@media (min-width: 768px) {
+  .icon-btn {
+    display: none;
+  }
+}
+
+/* На мобильных устройствах показывать бургер */
+@media (max-width: 767px) {
+  .icon-btn {
+    display: grid;
+  }
+}
