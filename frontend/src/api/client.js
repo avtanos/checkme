@@ -110,3 +110,57 @@ export const getMyProvider = async () => {
   return response.data;
 };
 
+// Админ-панель: Управление пользователями
+export const getAllUsers = async () => {
+  const response = await apiClient.get('/api/admin/users');
+  return response.data;
+};
+
+export const getUser = async (userId) => {
+  const response = await apiClient.get(`/api/admin/users/${userId}`);
+  return response.data;
+};
+
+export const updateUser = async (userId, userData) => {
+  const response = await apiClient.put(`/api/admin/users/${userId}`, userData);
+  return response.data;
+};
+
+export const deleteUser = async (userId) => {
+  const response = await apiClient.delete(`/api/admin/users/${userId}`);
+  return response.data;
+};
+
+// Админ-панель: Управление контентом
+export const deleteProviderAdmin = async (providerId) => {
+  const response = await apiClient.delete(`/api/admin/providers/${providerId}`);
+  return response.data;
+};
+
+export const toggleProviderActive = async (providerId) => {
+  const response = await apiClient.put(`/api/admin/providers/${providerId}/toggle-active`);
+  return response.data;
+};
+
+// Админ-панель: Управление категориями
+export const getAllCategoriesAdmin = async () => {
+  const response = await apiClient.get('/api/admin/categories');
+  return response.data;
+};
+
+export const createCategory = async (categoryData) => {
+  const response = await apiClient.post('/api/admin/categories', categoryData);
+  return response.data;
+};
+
+export const deleteCategory = async (categoryValue) => {
+  const response = await apiClient.delete(`/api/admin/categories/${categoryValue}`);
+  return response.data;
+};
+
+// Админ-панель: Статистика
+export const getAdminStats = async () => {
+  const response = await apiClient.get('/api/admin/stats');
+  return response.data;
+};
+

@@ -62,5 +62,25 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = De
     user = get_user_by_username(db, username=username)
     if user is None:
         raise credentials_exception
+    if not user.is_active:
+        raise HTTPException(status_code=403, detail="User is inactive")
     return user
+
+async def get_current_admin(current_user: User = Depends(get_current_user)):
+    """Проверка прав администратора"""
+    if current_user.role not in ["admin", "super_admin"]:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions"
+        )
+    return current_user
+
+async def get_current_super_admin(current_user: User = Depends(get_current_user)):
+    """Проверка прав супер-администратора"""
+    if current_user.role != "super_admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Not enough permissions. Super admin access required."
+        )
+    return current_user
 

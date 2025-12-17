@@ -30,7 +30,14 @@ function LoginPage() {
       localStorage.setItem('token', response.access_token);
       localStorage.setItem('user_id', response.user_id);
       localStorage.setItem('provider_id', response.provider_id || '');
-      navigate('/cabinet');
+      localStorage.setItem('user_role', response.role || 'user');
+      
+      // Перенаправляем админов на админ-панель
+      if (response.role === 'admin' || response.role === 'super_admin') {
+        navigate('/admin');
+      } else {
+        navigate('/cabinet');
+      }
     } catch (err) {
       setError(err.response?.data?.detail || 'Ошибка входа. Проверьте данные.');
       setLoading(false);

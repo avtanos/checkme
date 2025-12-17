@@ -90,6 +90,7 @@ class Token(BaseModel):
     token_type: str
     user_id: int
     provider_id: Optional[int] = None
+    role: Optional[str] = None
 
 
 class UserResponse(BaseModel):
@@ -97,6 +98,29 @@ class UserResponse(BaseModel):
     username: str
     email: str
     provider_id: Optional[int] = None
+    role: str
+    is_active: bool
+
+    class Config:
+        from_attributes = True
+
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[EmailStr] = None
+    role: Optional[str] = None
+    is_active: Optional[bool] = None
+    provider_id: Optional[int] = None
+
+
+class CategoryCreate(BaseModel):
+    value: str
+    label: str
+
+
+class CategoryResponse(BaseModel):
+    value: str
+    label: str
 
     class Config:
         from_attributes = True

@@ -8,11 +8,13 @@ from database import engine, Base, get_db
 from models import ServiceProvider, Message, User
 from schemas import (
     ServiceProviderCreate, ServiceProviderUpdate, ServiceProviderResponse,
-    MessageCreate, MessageResponse, UserRegister, UserLogin, Token, UserResponse
+    MessageCreate, MessageResponse, UserRegister, UserLogin, Token, UserResponse,
+    UserUpdate, CategoryCreate, CategoryResponse
 )
 from auth import (
     get_password_hash, authenticate_user, create_access_token,
-    get_current_user, get_user_by_username, get_user_by_email, ACCESS_TOKEN_EXPIRE_MINUTES
+    get_current_user, get_user_by_username, get_user_by_email, ACCESS_TOKEN_EXPIRE_MINUTES,
+    get_current_admin, get_current_super_admin
 )
 from datetime import timedelta
 from fastapi.security import OAuth2PasswordRequestForm
@@ -37,6 +39,14 @@ app.add_middleware(
 
 # Статическая раздача файлов
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+
+# ====== Категории (используются в разных endpoints) ======
+CATEGORIES = [
+    {"value": "cargo", "label": "Грузовые машины"},
+    {"value": "plumber", "label": "Сантехники"},
+    {"value": "tow_truck", "label": "Эвакуаторы"},
+    {"value": "electrician", "label": "Электрики"},
+]
 
 
 @app.get("/")
@@ -187,14 +197,12 @@ def create_message(
 @app.get("/api/categories")
 def get_categories():
     """Получить список доступных категорий"""
+    # Используем CATEGORIES из админ-панели, добавляем "other" если его нет
+    categories_list = CATEGORIES.copy()
+    if not any(cat["value"] == "other" for cat in categories_list):
+        categories_list.append({"value": "other", "label": "Другое"})
     return {
-        "categories": [
-            {"value": "cargo", "label": "Грузовые машины"},
-            {"value": "plumber", "label": "Сантехники"},
-            {"value": "tow_truck", "label": "Эвакуаторы"},
-            {"value": "electrician", "label": "Электрики"},
-            {"value": "other", "label": "Другое"}
-        ]
+        "categories": categories_list
     }
 
 
@@ -274,7 +282,8 @@ async def register(
         "access_token": access_token,
         "token_type": "bearer",
         "user_id": db_user.id,
-        "provider_id": db_provider.id
+        "provider_id": db_provider.id,
+        "role": db_user.role
     }
 
 
@@ -298,7 +307,8 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
         "access_token": access_token,
         "token_type": "bearer",
         "user_id": user.id,
-        "provider_id": user.provider_id
+        "provider_id": user.provider_id,
+        "role": user.role
     }
 
 
@@ -322,6 +332,184 @@ def get_my_provider(
         raise HTTPException(status_code=404, detail="Provider not found")
     
     return provider
+
+
+# ====== АДМИН-ПАНЕЛЬ: Управление пользователями ======
+@app.get("/api/admin/users", response_model=List[UserResponse])
+def get_all_users(
+    current_user: User = Depends(get_current_super_admin),
+    db: Session = Depends(get_db),
+    skip: int = 0,
+    limit: int = 100
+):
+    """Получить список всех пользователей (только для супер-администратора)"""
+    users = db.query(User).offset(skip).limit(limit).all()
+    return users
+
+
+@app.get("/api/admin/users/{user_id}", response_model=UserResponse)
+def get_user(
+    user_id: int,
+    current_user: User = Depends(get_current_super_admin),
+    db: Session = Depends(get_db)
+):
+    """Получить информацию о пользователе (только для супер-администратора)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
+
+
+@app.put("/api/admin/users/{user_id}", response_model=UserResponse)
+def update_user(
+    user_id: int,
+    user_update: UserUpdate,
+    current_user: User = Depends(get_current_super_admin),
+    db: Session = Depends(get_db)
+):
+    """Обновить информацию о пользователе (только для супер-администратора)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    update_data = user_update.dict(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(user, field, value)
+    
+    db.commit()
+    db.refresh(user)
+    return user
+
+
+@app.delete("/api/admin/users/{user_id}")
+def delete_user(
+    user_id: int,
+    current_user: User = Depends(get_current_super_admin),
+    db: Session = Depends(get_db)
+):
+    """Удалить пользователя (только для супер-администратора)"""
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    if user.role == "super_admin" and user.id == current_user.id:
+        raise HTTPException(status_code=400, detail="Cannot delete yourself")
+    
+    db.delete(user)
+    db.commit()
+    return {"message": "User deleted successfully"}
+
+
+# ====== АДМИН-ПАНЕЛЬ: Управление контентом (провайдерами) ======
+@app.delete("/api/admin/providers/{provider_id}")
+def delete_provider(
+    provider_id: int,
+    current_user: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Удалить провайдера (для администраторов)"""
+    provider = db.query(ServiceProvider).filter(ServiceProvider.id == provider_id).first()
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    
+    db.delete(provider)
+    db.commit()
+    return {"message": "Provider deleted successfully"}
+
+
+@app.put("/api/admin/providers/{provider_id}/toggle-active", response_model=ServiceProviderResponse)
+def toggle_provider_active(
+    provider_id: int,
+    current_user: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Активировать/деактивировать провайдера (для администраторов)"""
+    provider = db.query(ServiceProvider).filter(ServiceProvider.id == provider_id).first()
+    if not provider:
+        raise HTTPException(status_code=404, detail="Provider not found")
+    
+    provider.is_active = not provider.is_active
+    db.commit()
+    db.refresh(provider)
+    return provider
+
+
+# ====== АДМИН-ПАНЕЛЬ: Управление категориями ======
+@app.get("/api/admin/categories", response_model=List[CategoryResponse])
+def get_all_categories(
+    current_user: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Получить список всех категорий (для администраторов)"""
+    return CATEGORIES
+
+
+@app.post("/api/admin/categories", response_model=CategoryResponse)
+def create_category(
+    category: CategoryCreate,
+    current_user: User = Depends(get_current_super_admin),
+    db: Session = Depends(get_db)
+):
+    """Создать новую категорию (только для супер-администратора)"""
+    # Проверяем, не существует ли уже такая категория
+    if any(cat["value"] == category.value for cat in CATEGORIES):
+        raise HTTPException(status_code=400, detail="Category already exists")
+    
+    new_category = {"value": category.value, "label": category.label}
+    CATEGORIES.append(new_category)
+    return new_category
+
+
+@app.delete("/api/admin/categories/{category_value}")
+def delete_category(
+    category_value: str,
+    current_user: User = Depends(get_current_super_admin),
+    db: Session = Depends(get_db)
+):
+    """Удалить категорию (только для супер-администратора)"""
+    global CATEGORIES
+    category_to_remove = None
+    for cat in CATEGORIES:
+        if cat["value"] == category_value:
+            category_to_remove = cat
+            break
+    
+    if not category_to_remove:
+        raise HTTPException(status_code=404, detail="Category not found")
+    
+    # Проверяем, есть ли провайдеры с этой категорией
+    providers_count = db.query(ServiceProvider).filter(ServiceProvider.category == category_value).count()
+    if providers_count > 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Cannot delete category: {providers_count} providers use this category"
+        )
+    
+    CATEGORIES.remove(category_to_remove)
+    return {"message": "Category deleted successfully"}
+
+
+# ====== Статистика для админ-панели ======
+@app.get("/api/admin/stats")
+def get_admin_stats(
+    current_user: User = Depends(get_current_admin),
+    db: Session = Depends(get_db)
+):
+    """Получить статистику для админ-панели (для администраторов)"""
+    total_users = db.query(User).count()
+    total_providers = db.query(ServiceProvider).count()
+    active_providers = db.query(ServiceProvider).filter(ServiceProvider.is_active == True).count()
+    total_messages = db.query(Message).count()
+    total_categories = len(CATEGORIES)
+    
+    return {
+        "total_users": total_users,
+        "total_providers": total_providers,
+        "active_providers": active_providers,
+        "inactive_providers": total_providers - active_providers,
+        "total_messages": total_messages,
+        "total_categories": total_categories,
+    }
 
 
 if __name__ == "__main__":

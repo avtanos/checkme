@@ -1,8 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './TopBar.css';
 
 function TopBar() {
+  const [userRole, setUserRole] = useState(null);
+
+  useEffect(() => {
+    const role = localStorage.getItem('user_role');
+    setUserRole(role);
+  }, []);
+
   return (
     <header className="topbar">
       <div className="container topbar__inner">
@@ -15,8 +22,15 @@ function TopBar() {
         </div>
 
         <div className="actions">
-          <Link to="/login" className="btn btn--primary">Войти</Link>
-          <Link to="/register" className="btn">Регистрация</Link>
+          {(userRole === 'admin' || userRole === 'super_admin') && (
+            <Link to="/admin" className="btn btn--primary">Админ-панель</Link>
+          )}
+          {!userRole && (
+            <>
+              <Link to="/login" className="btn btn--primary">Войти</Link>
+              <Link to="/register" className="btn">Регистрация</Link>
+            </>
+          )}
         </div>
       </div>
     </header>

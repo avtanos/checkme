@@ -12,6 +12,8 @@ class User(Base):
     email = Column(String, unique=True, nullable=False, index=True)
     password_hash = Column(String, nullable=False)
     provider_id = Column(Integer, ForeignKey("service_providers.id"), unique=True, nullable=True)
+    role = Column(String, default="user")  # user, admin, super_admin
+    is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     provider = relationship("ServiceProvider", back_populates="user", uselist=False)
