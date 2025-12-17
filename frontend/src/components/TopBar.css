@@ -79,6 +79,12 @@
   white-space: nowrap;
   text-decoration: none;
   display: inline-block;
+  font-family: inherit;
+  color: inherit;
+}
+
+.actions .btn {
+  color: var(--ink);
 }
 
 .btn:active {

@@ -5,6 +5,7 @@ import LocationPicker from '../components/LocationPicker';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import ApiUnavailable from '../components/ApiUnavailable';
 import Footer from '../components/Footer';
+import { logout, isAuthenticated } from '../utils/auth';
 import './ProviderCabinet.css';
 
 const categoryOptions = [
@@ -37,8 +38,7 @@ function ProviderCabinet() {
 
   useEffect(() => {
     // Проверяем наличие токена
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!isAuthenticated()) {
       navigate('/login');
       return;
     }
@@ -156,7 +156,7 @@ function ProviderCabinet() {
       setSaving(false);
     } catch (err) {
       if (err.response?.status === 401) {
-        localStorage.removeItem('token');
+        logout();
         navigate('/login');
       } else {
         setError(err.response?.data?.detail || 'Ошибка при сохранении данных');
@@ -166,9 +166,7 @@ function ProviderCabinet() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user_id');
-    localStorage.removeItem('provider_id');
+    logout();
     navigate('/');
   };
 

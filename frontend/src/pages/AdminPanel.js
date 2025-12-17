@@ -14,6 +14,7 @@ import {
   getCurrentUser,
 } from '../api/client';
 import Footer from '../components/Footer';
+import { logout } from '../utils/auth';
 import './AdminPanel.css';
 
 function AdminPanel() {
@@ -148,7 +149,7 @@ function AdminPanel() {
         <div className="admin-user-info">
           <span>{user.username} ({user.role})</span>
           <button onClick={() => {
-            localStorage.removeItem('token');
+            logout();
             navigate('/');
           }}>Выйти</button>
         </div>
