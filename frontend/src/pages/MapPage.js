@@ -4,6 +4,7 @@ import Map from '../components/Map';
 import ProviderList from '../components/ProviderList';
 import ProviderModal from '../components/ProviderModal';
 import FilterBar from '../components/FilterBar';
+import ApiUnavailable from '../components/ApiUnavailable';
 import { getProviders, getCategories } from '../api/client';
 import './MapPage.css';
 
@@ -17,6 +18,7 @@ function MapPage() {
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(true);
   const [mapRef, setMapRef] = useState(null);
+  const [apiError, setApiError] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -42,8 +44,12 @@ function MapPage() {
       setProviders(data);
       setFilteredProviders(data);
       setLoading(false);
+      setApiError(null);
     } catch (error) {
       console.error('Error loading providers:', error);
+      if (error.isConfigError || error.isNetworkError) {
+        setApiError(error.message || 'Backend API недоступен');
+      }
       setLoading(false);
     }
   };
@@ -92,6 +98,15 @@ function MapPage() {
   const handleToggleFilters = () => {
     setShowFilters(!showFilters);
   };
+
+  if (apiError) {
+    return (
+      <div className="page">
+        <TopBar />
+        <ApiUnavailable message={apiError} />
+      </div>
+    );
+  }
 
   if (loading) {
     return (

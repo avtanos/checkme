@@ -4,10 +4,7 @@
 from database import SessionLocal, engine, Base
 from models import User
 from auth import get_user_by_username, get_user_by_email
-from passlib.context import CryptContext
-
-# Используем тот же контекст, что и в auth.py
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+import bcrypt
 
 def create_admin():
     Base.metadata.create_all(bind=engine)
@@ -38,12 +35,12 @@ def create_admin():
             return
         
         print(f"Создаем супер-администратора: {username}")
-        # Используем тот же метод хеширования, что и в auth.py
-        # Ограничиваем длину пароля для bcrypt (максимум 72 байта)
+        # Используем прямой вызов bcrypt для обхода проблемы с passlib
         password_bytes = password.encode('utf-8')
         if len(password_bytes) > 72:
-            password = password[:72]
-        password_hash = pwd_context.hash(password)
+            password_bytes = password_bytes[:72]
+        salt = bcrypt.gensalt()
+        password_hash = bcrypt.hashpw(password_bytes, salt).decode('utf-8')
         
         superadmin = User(
             username=username,

@@ -1,13 +1,60 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:8000';
+// Автоматическое определение API URL в зависимости от окружения
+const getApiBaseUrl = () => {
+  // Если есть переменная окружения, используем её
+  if (process.env.REACT_APP_API_URL) {
+    return process.env.REACT_APP_API_URL;
+  }
+  
+  // Если мы на GitHub Pages или другом домене (не localhost)
+  const hostname = window.location.hostname;
+  if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    // Для production можно указать публичный URL backend
+    // Если backend не развернут публично, вернем null для показа сообщения
+    return null; // или 'https://your-backend-url.com' если backend развернут
+  }
+  
+  // Для localhost используем локальный backend
+  return 'http://localhost:8000';
+};
 
+const API_BASE_URL = getApiBaseUrl();
+
+// Если API URL не настроен, создаем клиент с заглушкой
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BASE_URL || 'http://localhost:8000', // fallback для предотвращения ошибок
   headers: {
     'Content-Type': 'application/json',
   },
 });
+
+// Обработка ошибок подключения
+apiClient.interceptors.request.use(
+  (config) => {
+    if (!API_BASE_URL) {
+      const error = new Error('Backend API не настроен. Для работы приложения необходимо запустить backend сервер локально или настроить публичный API URL через переменную окружения REACT_APP_API_URL.');
+      error.isConfigError = true;
+      return Promise.reject(error);
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.isConfigError) {
+      return Promise.reject(error);
+    }
+    if (error.code === 'ERR_NETWORK' || error.message?.includes('Network Error') || error.message?.includes('Failed to fetch')) {
+      error.message = 'Не удалось подключиться к серверу. Убедитесь, что backend сервер запущен на ' + (API_BASE_URL || 'http://localhost:8000');
+      error.isNetworkError = true;
+    }
+    return Promise.reject(error);
+  }
+);
 
 // Добавляем токен к запросам, если он есть
 apiClient.interceptors.request.use(

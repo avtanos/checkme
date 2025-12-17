@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getMyProvider, updateProvider, getProviderMessages } from '../api/client';
 import LocationPicker from '../components/LocationPicker';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import ApiUnavailable from '../components/ApiUnavailable';
 import './ProviderCabinet.css';
 
 const categoryOptions = [
@@ -68,13 +69,17 @@ function ProviderCabinet() {
       }
       setLoading(false);
     } catch (err) {
-      if (err.response?.status === 401) {
+      if (err.isConfigError || err.isNetworkError) {
+        setError(err.message || 'Backend API недоступен. Для работы приложения необходимо запустить backend сервер локально.');
+      } else if (err.response?.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
+      } else if (err.response?.status === 404) {
+        setError('Провайдер не найден. Возможно, ваш аккаунт не привязан к провайдеру.');
       } else {
-        setError('Ошибка загрузки данных провайдера');
-        setLoading(false);
+        setError(err.response?.data?.detail || 'Ошибка загрузки данных провайдера');
       }
+      setLoading(false);
     }
   };
 
@@ -166,8 +171,19 @@ function ProviderCabinet() {
     navigate('/');
   };
 
+  if (loading && error && (error.includes('Backend API') || error.includes('подключиться к серверу'))) {
+    return <ApiUnavailable message={error} />;
+  }
+
   if (loading) {
     return <div className="loading">Загрузка...</div>;
+  }
+
+  if (!provider && error) {
+    if (error.includes('Backend API') || error.includes('подключиться к серверу')) {
+      return <ApiUnavailable message={error} />;
+    }
+    return <div className="error">{error}</div>;
   }
 
   if (!provider) {

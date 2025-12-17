@@ -1,0 +1,78 @@
+.api-unavailable {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--bg);
+}
+
+.api-unavailable-content {
+  max-width: 600px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--divider);
+  padding: 32px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.06);
+}
+
+.api-unavailable-content h2 {
+  margin: 0 0 16px;
+  color: var(--teal);
+  font-size: 24px;
+}
+
+.api-unavailable-content > p {
+  margin: 0 0 24px;
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.api-instructions {
+  background: rgba(45, 101, 112, 0.05);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid rgba(45, 101, 112, 0.1);
+}
+
+.api-instructions h3 {
+  margin: 0 0 12px;
+  font-size: 18px;
+  color: var(--teal);
+}
+
+.api-instructions ol {
+  margin: 0 0 16px;
+  padding-left: 24px;
+}
+
+.api-instructions li {
+  margin: 8px 0;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.api-instructions code {
+  background: rgba(255, 255, 255, 0.8);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  color: var(--teal);
+  border: 1px solid rgba(45, 101, 112, 0.2);
+}
+
+.api-note {
+  margin: 16px 0 0;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.6);
+  border-radius: 8px;
+  border-left: 3px solid var(--teal);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.api-note strong {
+  color: var(--teal);
+}
