@@ -5,53 +5,76 @@ import './ProviderList.css';
 function ProviderList({ providers, onProviderClick }) {
   if (providers.length === 0) {
     return (
-      <div className="provider-list">
-        <div className="provider-list-empty">Нет доступных провайдеров</div>
-      </div>
+      <aside className="panel panel--list">
+        <div className="panel__head">
+          <h3>Провайдеры</h3>
+        </div>
+        <div className="panel__body">
+          <div className="list-empty">Нет доступных провайдеров</div>
+        </div>
+      </aside>
     );
   }
 
   return (
-    <div className="provider-list">
-      <div className="provider-list-header">
-        <h3>Список провайдеров ({providers.length})</h3>
+    <aside className="panel panel--list">
+      <div className="panel__head">
+        <h3>Провайдеры</h3>
+        <button className="btn-sm" type="button">Сортировка</button>
       </div>
-      <div className="provider-list-items">
-        {providers.map((provider) => {
-          const categoryIcon = getCategoryIcon(provider.category);
-          return (
-            <div
-              key={provider.id}
-              className="provider-item"
-              onClick={() => onProviderClick(provider)}
-            >
-              <div className="provider-item-header">
-                <div className="provider-item-title">
-                  <span className="provider-category-icon">{categoryIcon.emoji}</span>
+      <div className="panel__body">
+        <div className="list" aria-label="Список провайдеров">
+          {providers.map((provider) => {
+            const categoryIcon = getCategoryIcon(provider.category);
+            return (
+              <article
+                key={provider.id}
+                className="card"
+                onClick={() => onProviderClick(provider)}
+              >
+                <div className="badge">
+                  <span style={{ background: categoryIcon.color || 'var(--teal)' }}></span>
+                </div>
+                <div>
                   <h4>{provider.name}</h4>
+                  {provider.description && (
+                    <p>{provider.description}</p>
+                  )}
+                  <div className="meta">
+                    {provider.phone && (
+                      <span><b>Тел:</b> {provider.phone}</span>
+                    )}
+                    {provider.address && (
+                      <span><b>Адрес:</b> {provider.address}</span>
+                    )}
+                  </div>
+                  <div className="card__actions">
+                    {provider.phone && (
+                      <a
+                        href={`tel:${provider.phone}`}
+                        className="btn-sm btn-sm--call"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        Позвонить
+                      </a>
+                    )}
+                    <button
+                      className="btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onProviderClick(provider);
+                      }}
+                    >
+                      Показать на карте
+                    </button>
+                  </div>
                 </div>
-                <span className="provider-category">
-                  {categoryIcon.label}
-                </span>
-              </div>
-              {provider.description && (
-                <p className="provider-description">{provider.description}</p>
-              )}
-              {provider.phone && (
-                <div className="provider-contact">
-                  <span>📞 {provider.phone}</span>
-                </div>
-              )}
-              {provider.address && (
-                <div className="provider-address">
-                  <span>📍 {provider.address}</span>
-                </div>
-              )}
-            </div>
-          );
-        })}
+              </article>
+            );
+          })}
+        </div>
       </div>
-    </div>
+    </aside>
   );
 }
 

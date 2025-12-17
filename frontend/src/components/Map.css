@@ -1,15 +1,17 @@
 .map-wrapper {
-  flex: 1;
-  height: 100%;
+  height: 320px;
   width: 100%;
   position: relative;
-  min-height: 0;
+  border-radius: var(--radius);
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .leaflet-container {
   height: 100%;
   width: 100%;
   z-index: 1;
+  border-radius: var(--radius);
 }
 
 .custom-marker {
@@ -23,25 +25,16 @@
 }
 
 /* Планшеты */
-@media (max-width: 1024px) and (min-width: 769px) {
+@media (min-width: 720px) {
   .map-wrapper {
-    min-height: 400px;
+    height: 380px;
   }
 }
 
-/* Мобильные устройства */
-@media (max-width: 768px) {
+/* Desktop/Web */
+@media (min-width: 1024px) {
   .map-wrapper {
-    height: 50vh;
-    min-height: 300px;
-  }
-}
-
-/* Маленькие мобильные */
-@media (max-width: 480px) {
-  .map-wrapper {
-    height: 45vh;
-    min-height: 250px;
+    height: 620px;
   }
 }
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import TopBar from '../components/TopBar';
 import Map from '../components/Map';
 import ProviderList from '../components/ProviderList';
 import ProviderModal from '../components/ProviderModal';
@@ -70,39 +70,51 @@ function MapPage() {
   };
 
   if (loading) {
-    return <div className="loading">Загрузка...</div>;
+    return (
+      <div className="page">
+        <TopBar />
+        <div className="loading">Загрузка...</div>
+      </div>
+    );
   }
 
   return (
-    <div className="map-page">
-      <header className="map-header">
-        <div className="map-header-top">
-          <h1>Карта провайдеров услуг Кыргызстана</h1>
-          <div className="auth-links">
-            <Link to="/login" className="auth-link-btn">
-              Вход
-            </Link>
-            <Link to="/register" className="auth-link-btn register-btn">
-              Регистрация
-            </Link>
+    <div className="page">
+      <TopBar />
+
+      <FilterBar
+        categories={categories}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
+
+      <main className="main">
+        <div className="container">
+          <div className="layout">
+            <section className="panel panel--map">
+              <div className="panel__head">
+                <h3>Карта</h3>
+                <div style={{ display: 'flex', gap: '8px' }}>
+                  <button className="btn-sm" type="button">Моё местоположение</button>
+                  <button className="btn-sm" type="button">Фильтр</button>
+                </div>
+              </div>
+              <div className="panel__body">
+                <Map
+                  providers={filteredProviders}
+                  onMarkerClick={handleMarkerClick}
+                />
+              </div>
+            </section>
+
+            <ProviderList
+              providers={filteredProviders}
+              onProviderClick={handleProviderClick}
+            />
           </div>
         </div>
-        <FilterBar
-          categories={categories}
-          selectedCategory={selectedCategory}
-          onCategoryChange={setSelectedCategory}
-        />
-      </header>
-      <div className="map-container">
-        <Map
-          providers={filteredProviders}
-          onMarkerClick={handleMarkerClick}
-        />
-        <ProviderList
-          providers={filteredProviders}
-          onProviderClick={handleProviderClick}
-        />
-      </div>
+      </main>
+
       {isModalOpen && selectedProvider && (
         <ProviderModal
           provider={selectedProvider}
