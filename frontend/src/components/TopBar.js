@@ -17,9 +17,6 @@ function TopBar() {
         <div className="actions">
           <Link to="/login" className="btn btn--primary">Войти</Link>
           <Link to="/register" className="btn">Регистрация</Link>
-          <button className="icon-btn" type="button" aria-label="Меню">
-            <div className="burger"><span></span></div>
-          </button>
         </div>
       </div>
     </header>
