@@ -73,7 +73,7 @@ function ProviderCabinet() {
       if (err.isConfigError || err.isNetworkError) {
         setError(err.message || 'Backend API недоступен. Для работы приложения необходимо запустить backend сервер локально.');
       } else if (err.response?.status === 401) {
-        localStorage.removeItem('token');
+        logout();
         navigate('/login');
       } else if (err.response?.status === 404) {
         setError('Провайдер не найден. Возможно, ваш аккаунт не привязан к провайдеру.');
