@@ -1,7 +1,13 @@
 .admin-panel {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   padding: 20px;
+}
+
+.admin-panel > .admin-content {
+  flex: 1;
 }
 
 .admin-header {

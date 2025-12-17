@@ -1,6 +1,12 @@
 .cabinet-page {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #f5f5f5;
+}
+
+.cabinet-page > .cabinet-content {
+  flex: 1;
 }
 
 .cabinet-header {
