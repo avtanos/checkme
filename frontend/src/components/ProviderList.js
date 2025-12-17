@@ -1,8 +1,44 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import './ProviderList.css';
 
 function ProviderList({ providers, onProviderClick }) {
+  const [sortBy, setSortBy] = useState('name');
+  const [showSortMenu, setShowSortMenu] = useState(false);
+  const sortMenuRef = useRef(null);
+
+  const sortedProviders = [...providers].sort((a, b) => {
+    switch (sortBy) {
+      case 'name':
+        return a.name.localeCompare(b.name);
+      case 'category':
+        return a.category.localeCompare(b.category);
+      default:
+        return 0;
+    }
+  });
+
+  const handleSortChange = (newSortBy) => {
+    setSortBy(newSortBy);
+    setShowSortMenu(false);
+  };
+
+  // Закрываем меню при клике вне его
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (sortMenuRef.current && !sortMenuRef.current.contains(event.target)) {
+        setShowSortMenu(false);
+      }
+    };
+
+    if (showSortMenu) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showSortMenu]);
   if (providers.length === 0) {
     return (
       <aside className="panel panel--list">
@@ -20,11 +56,35 @@ function ProviderList({ providers, onProviderClick }) {
     <aside className="panel panel--list">
       <div className="panel__head">
         <h3>Провайдеры</h3>
-        <button className="btn-sm" type="button">Сортировка</button>
+        <div style={{ position: 'relative' }}>
+          <button 
+            className="btn-sm" 
+            type="button" 
+            onClick={() => setShowSortMenu(!showSortMenu)}
+          >
+            Сортировка
+          </button>
+          {showSortMenu && (
+            <div className="sort-menu" ref={sortMenuRef}>
+              <button 
+                className={`sort-option ${sortBy === 'name' ? 'active' : ''}`}
+                onClick={() => handleSortChange('name')}
+              >
+                По имени
+              </button>
+              <button 
+                className={`sort-option ${sortBy === 'category' ? 'active' : ''}`}
+                onClick={() => handleSortChange('category')}
+              >
+                По категории
+              </button>
+            </div>
+          )}
+        </div>
       </div>
       <div className="panel__body">
         <div className="list" aria-label="Список провайдеров">
-          {providers.map((provider) => {
+          {sortedProviders.map((provider) => {
             const categoryIcon = getCategoryIcon(provider.category);
             return (
               <article

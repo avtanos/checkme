@@ -109,3 +109,40 @@
 .btn-sm--call:hover {
   background: rgba(45, 101, 112, 0.15);
 }
+
+/* Sort menu */
+.sort-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--divider);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 4px;
+  z-index: 100;
+  min-width: 140px;
+}
+
+.sort-option {
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--ink);
+  transition: background 0.12s ease;
+}
+
+.sort-option:hover {
+  background: rgba(45, 101, 112, 0.08);
+}
+
+.sort-option.active {
+  background: rgba(45, 101, 112, 0.1);
+  color: var(--teal);
+  font-weight: 600;
+}

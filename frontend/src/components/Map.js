@@ -56,7 +56,19 @@ function MapCenter({ center, zoom, shouldCenter }) {
   return null;
 }
 
-function Map({ providers, onMarkerClick }) {
+function MapController({ onMapReady }) {
+  const map = useMap();
+  
+  useEffect(() => {
+    if (onMapReady) {
+      onMapReady(map);
+    }
+  }, [map, onMapReady]);
+  
+  return null;
+}
+
+function Map({ providers, onMarkerClick, onMapReady }) {
   const [userLocation, setUserLocation] = useState(null);
   const [locationError, setLocationError] = useState(null);
   const [mapCenter, setMapCenter] = useState(defaultCenter);
@@ -121,6 +133,7 @@ function Map({ providers, onMarkerClick }) {
         />
         <MapCenter center={mapCenter} zoom={mapZoom} shouldCenter={shouldCenter} />
         <MapBounds providers={providers} userLocation={userLocation} shouldFitBounds={shouldFitBounds} />
+        {onMapReady && <MapController onMapReady={onMapReady} />}
         
         {/* Маркер местоположения пользователя */}
         {userLocation && (

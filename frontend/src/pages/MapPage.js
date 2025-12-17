@@ -15,6 +15,8 @@ function MapPage() {
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showFilters, setShowFilters] = useState(true);
+  const [mapRef, setMapRef] = useState(null);
 
   useEffect(() => {
     loadCategories();
@@ -69,6 +71,28 @@ function MapPage() {
     setSelectedProvider(null);
   };
 
+  const handleMyLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          if (mapRef) {
+            mapRef.setView([latitude, longitude], 15);
+          }
+        },
+        (error) => {
+          alert('Не удалось получить ваше местоположение. Проверьте настройки геолокации.');
+        }
+      );
+    } else {
+      alert('Геолокация не поддерживается вашим браузером.');
+    }
+  };
+
+  const handleToggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
+
   if (loading) {
     return (
       <div className="page">
@@ -82,11 +106,13 @@ function MapPage() {
     <div className="page">
       <TopBar />
 
-      <FilterBar
-        categories={categories}
-        selectedCategory={selectedCategory}
-        onCategoryChange={setSelectedCategory}
-      />
+      {showFilters && (
+        <FilterBar
+          categories={categories}
+          selectedCategory={selectedCategory}
+          onCategoryChange={setSelectedCategory}
+        />
+      )}
 
       <main className="main">
         <div className="container">
@@ -95,14 +121,19 @@ function MapPage() {
               <div className="panel__head">
                 <h3>Карта</h3>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button className="btn-sm" type="button">Моё местоположение</button>
-                  <button className="btn-sm" type="button">Фильтр</button>
+                  <button className="btn-sm" type="button" onClick={handleMyLocation}>
+                    Моё местоположение
+                  </button>
+                  <button className="btn-sm" type="button" onClick={handleToggleFilters}>
+                    {showFilters ? 'Скрыть фильтры' : 'Показать фильтры'}
+                  </button>
                 </div>
               </div>
               <div className="panel__body">
                 <Map
                   providers={filteredProviders}
                   onMarkerClick={handleMarkerClick}
+                  onMapReady={setMapRef}
                 />
               </div>
             </section>
