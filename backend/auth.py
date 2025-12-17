@@ -17,7 +17,20 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/auth/login")
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    """Проверка пароля с поддержкой обоих форматов (passlib и прямой bcrypt)"""
+    try:
+        # Сначала пробуем через passlib
+        return pwd_context.verify(plain_password, hashed_password)
+    except Exception:
+        # Если не работает, пробуем прямой bcrypt
+        try:
+            import bcrypt
+            password_bytes = plain_password.encode('utf-8')
+            if len(password_bytes) > 72:
+                password_bytes = password_bytes[:72]
+            return bcrypt.checkpw(password_bytes, hashed_password.encode('utf-8'))
+        except Exception:
+            return False
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
