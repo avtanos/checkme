@@ -138,16 +138,70 @@
   bottom: 0;
 }
 
-/* Скрыть бургер-меню на десктопе, показывать только на мобильных */
-@media (min-width: 768px) {
-  .icon-btn {
-    display: none;
+/* ====== Адаптивность ====== */
+
+/* Планшеты и меньше */
+@media (max-width: 768px) {
+  .topbar__inner {
+    height: 56px;
+    gap: 8px;
+  }
+
+  .logo-mini {
+    width: 36px;
+    height: 36px;
+    font-size: 13px;
+  }
+
+  .brandtext strong {
+    font-size: 13px;
+  }
+
+  .brandtext span {
+    display: none; /* Скрываем подзаголовок на мобильных */
+  }
+
+  .btn {
+    padding: 8px 10px;
+    font-size: 12px;
   }
 }
 
-/* На мобильных устройствах показывать бургер */
-@media (max-width: 767px) {
-  .icon-btn {
-    display: grid;
+/* Маленькие мобильные устройства */
+@media (max-width: 480px) {
+  .topbar__inner {
+    height: 52px;
+    gap: 6px;
+  }
+
+  .logo-mini {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+
+  .brandtext {
+    display: none; /* На очень маленьких экранах скрываем весь текст, оставляем только логотип */
+  }
+
+  .actions {
+    gap: 6px;
+  }
+
+  .btn {
+    padding: 7px 9px;
+    font-size: 11px;
+  }
+
+  /* На очень маленьких экранах можно сократить текст кнопок */
+  .btn:not(.btn--primary) {
+    display: none; /* Скрываем "Регистрация" на очень маленьких экранах */
+  }
+}
+
+/* Средние экраны (планшеты в портретной ориентации) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .brandtext strong {
+    max-width: 180px; /* Ограничиваем ширину текста */
   }
 }
