@@ -23,9 +23,18 @@ from fastapi import File, UploadFile, Form
 from fastapi.staticfiles import StaticFiles
 from upload import save_uploaded_file
 import json
+import logging
+
+# Настройка логирования
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Создаем таблицы
-Base.metadata.create_all(bind=engine)
+try:
+    Base.metadata.create_all(bind=engine)
+    logger.info("Database tables created successfully")
+except Exception as e:
+    logger.error(f"Error creating database tables: {e}")
 
 app = FastAPI(title="Service Provider Map API")
 
@@ -48,10 +57,16 @@ app.add_middleware(
 
 # Статическая раздача файлов
 import pathlib
-uploads_dir = pathlib.Path("uploads")
-uploads_dir.mkdir(exist_ok=True)
-if uploads_dir.exists():
-    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+try:
+    uploads_dir = pathlib.Path("uploads")
+    uploads_dir.mkdir(exist_ok=True)
+    if uploads_dir.exists():
+        app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+        logger.info(f"Uploads directory mounted at /uploads")
+    else:
+        logger.warning("Uploads directory does not exist")
+except Exception as e:
+    logger.error(f"Error mounting uploads directory: {e}")
 
 # ====== Категории (используются в разных endpoints) ======
 CATEGORIES = [
@@ -64,7 +79,31 @@ CATEGORIES = [
 
 @app.get("/")
 def read_root():
-    return {"message": "Service Provider Map API"}
+    logger.info("Root endpoint accessed")
+    return {
+        "message": "Service Provider Map API",
+        "status": "running",
+        "version": "1.0.0"
+    }
+
+
+@app.get("/health")
+def health_check():
+    """Health check endpoint for Railway"""
+    try:
+        # Проверяем подключение к БД
+        db = next(get_db())
+        db.execute("SELECT 1")
+        db_status = "ok"
+    except Exception as e:
+        logger.error(f"Database health check failed: {e}")
+        db_status = "error"
+    
+    return {
+        "status": "ok" if db_status == "ok" else "degraded",
+        "database": db_status,
+        "service": "checkme-api"
+    }
 
 
 @app.get("/api/providers", response_model=List[ServiceProviderResponse])
@@ -527,5 +566,6 @@ def get_admin_stats(
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    logger.info(f"Starting server on port {port}")
+    uvicorn.run(app, host="0.0.0.0", port=port, log_level="info")
 
