@@ -47,7 +47,11 @@ app.add_middleware(
 )
 
 # Статическая раздача файлов
-app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
+import pathlib
+uploads_dir = pathlib.Path("uploads")
+uploads_dir.mkdir(exist_ok=True)
+if uploads_dir.exists():
+    app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 # ====== Категории (используются в разных endpoints) ======
 CATEGORIES = [
