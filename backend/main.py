@@ -93,7 +93,8 @@ def health_check(db: Session = Depends(get_db)):
     try:
         # Проверяем подключение к БД
         from sqlalchemy import text
-        db.execute(text("SELECT 1"))
+        result = db.execute(text("SELECT 1"))
+        result.fetchone()
         db_status = "ok"
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
