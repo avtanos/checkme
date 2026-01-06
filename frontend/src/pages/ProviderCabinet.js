@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getMyProvider, updateProvider, getProviderMessages } from '../api/client';
+import { getMyProvider, updateProvider, getProviderMessages, getPhotoUrl } from '../api/client';
 import LocationPicker from '../components/LocationPicker';
 import { getCategoryIcon } from '../utils/categoryIcons';
 import ApiUnavailable from '../components/ApiUnavailable';

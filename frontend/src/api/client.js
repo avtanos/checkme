@@ -52,9 +52,8 @@ const getApiBaseUrl = async () => {
   // Если мы на GitHub Pages или другом домене (не localhost)
   const hostname = window.location.hostname;
   if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    // Для production можно указать публичный URL backend
-    // Если backend не развернут публично, вернем null для показа сообщения
-    return null; // или 'https://your-backend-url.com' если backend развернут
+    // Для production используем Railway backend URL
+    return 'https://checkme-production.up.railway.app';
   }
   
   // Для localhost используем локальный backend
@@ -110,6 +109,21 @@ const initApiClient = async () => {
   }
   
   return apiClient;
+};
+
+// Экспортируем функцию для получения базового URL API
+export const getApiBaseUrlSync = () => {
+  return API_BASE_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? 'http://localhost:8000' 
+    : 'https://checkme-production.up.railway.app');
+};
+
+// Функция для получения полного URL фото
+export const getPhotoUrl = (photoPath) => {
+  if (!photoPath) return null;
+  if (photoPath.startsWith('http')) return photoPath;
+  const baseUrl = getApiBaseUrlSync();
+  return `${baseUrl}${photoPath}`;
 };
 
 // Функция-обертка для проверки доступности API

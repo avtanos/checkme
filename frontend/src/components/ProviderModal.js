@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { getCategoryIcon } from '../utils/categoryIcons';
+import { getPhotoUrl } from '../api/client';
 import './ProviderModal.css';
 
 function ProviderModal({ provider, onClose }) {
