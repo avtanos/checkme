@@ -58,7 +58,7 @@ function ProviderModal({ provider, onClose }) {
             {provider.photo && (
               <div className="modal-photo">
                 <img 
-                  src={provider.photo.startsWith('http') ? provider.photo : `http://localhost:8000${provider.photo}`} 
+                  src={getPhotoUrl(provider.photo)} 
                   alt={provider.name} 
                 />
               </div>

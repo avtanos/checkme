@@ -66,7 +66,7 @@ function ProviderCabinet() {
         address: data.address || '',
       });
       if (data.photo) {
-        setPhotoPreview(data.photo.startsWith('http') ? data.photo : `http://localhost:8000${data.photo}`);
+        setPhotoPreview(getPhotoUrl(data.photo));
       }
       setLoading(false);
     } catch (err) {
@@ -149,7 +149,7 @@ function ProviderCabinet() {
       const updated = await updateProvider(provider.id, formDataToSend);
       setProvider(updated);
       if (updated.photo) {
-        setPhotoPreview(updated.photo.startsWith('http') ? updated.photo : `http://localhost:8000${updated.photo}`);
+        setPhotoPreview(getPhotoUrl(updated.photo));
       }
       setPhotoFile(null);
       setSuccess('Данные успешно сохранены!');
