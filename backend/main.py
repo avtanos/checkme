@@ -39,6 +39,7 @@ app.add_middleware(
         "https://avtanos.github.io/checkme",
         "http://localhost:8000",
         "http://127.0.0.1:8000",
+        "https://checkme-production.up.railway.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
