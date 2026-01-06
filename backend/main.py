@@ -26,15 +26,26 @@ import json
 import logging
 
 # Настройка логирования
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
+
+# Логируем информацию о старте
+logger.info("=" * 50)
+logger.info("Starting application initialization...")
+logger.info(f"Working directory: {os.getcwd()}")
+logger.info(f"Python version: {os.sys.version}")
 
 # Создаем таблицы
 try:
+    logger.info("Creating database tables...")
     Base.metadata.create_all(bind=engine)
     logger.info("Database tables created successfully")
 except Exception as e:
-    logger.error(f"Error creating database tables: {e}")
+    logger.error(f"Error creating database tables: {e}", exc_info=True)
+    # Не прерываем запуск, если БД недоступна - приложение может работать в режиме только чтения
 
 app = FastAPI(title="Service Provider Map API")
 
@@ -89,7 +100,8 @@ def read_root():
 
 @app.get("/health")
 def health_check(db: Session = Depends(get_db)):
-    """Health check endpoint for Railway"""
+    """Health check endpoint for Railway - безопасный, не падает при ошибках"""
+    db_status = "unknown"
     try:
         # Проверяем подключение к БД
         from sqlalchemy import text
@@ -97,9 +109,11 @@ def health_check(db: Session = Depends(get_db)):
         result.fetchone()
         db_status = "ok"
     except Exception as e:
-        logger.error(f"Database health check failed: {e}")
+        logger.warning(f"Database health check failed: {e}")
         db_status = "error"
     
+    # Всегда возвращаем успешный ответ, даже если БД недоступна
+    # Это позволяет Railway видеть, что приложение работает
     return {
         "status": "ok" if db_status == "ok" else "degraded",
         "database": db_status,
