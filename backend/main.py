@@ -88,12 +88,12 @@ def read_root():
 
 
 @app.get("/health")
-def health_check():
+def health_check(db: Session = Depends(get_db)):
     """Health check endpoint for Railway"""
     try:
         # Проверяем подключение к БД
-        db = next(get_db())
-        db.execute("SELECT 1")
+        from sqlalchemy import text
+        db.execute(text("SELECT 1"))
         db_status = "ok"
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
